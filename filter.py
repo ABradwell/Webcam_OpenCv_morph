@@ -1,9 +1,24 @@
+"""
+    Author: Aiden Stevenson Bradwell
+    Date: 2021-11-19
+    Affiliation: University of Ottawa, Ottawa, Ontario (Student)
+
+    Description:
+        Contains all filters currently supported.
+        VideoFilter adds or removes filters, and is a helper class to the VideoShower class
+        Works as the active stack of requested filters.
+
+    Libraries required:
+        opencv-python
+        numpy
+"""
+
 import cv2
 import numpy as np
-from PIL import Image, ImageTk
 
 
 class VideoFilter:
+    """Implementation of a queue class, which stores filters, and applies them to requested frames"""
 
     def __init__(self, label):
         self.filter_queue = []
@@ -11,6 +26,12 @@ class VideoFilter:
         self.label = label
     
     def add_filter(self, filter_func):
+        """
+        Add a given filter method to the queue
+
+        :param filter_func: filter method to be added to the queue
+        :return: None
+        """
 
         print("Add filter.")
 
@@ -19,9 +40,16 @@ class VideoFilter:
         print(self)
 
     def remove_filter(self, filter_func):
+        """
+        Search the queue from last-to-first, to remove the last instance of
+        this function in the queue.
+
+        :param filter_func: Function to be removed
+        :return: None
+        """
 
         print("Remove filter.")
-        
+
         for i in range(len(self.filter_queue)-1, 0, -1):
             if self.filter_queue[i].__name__ == filter_func.__name__:
                 del self.filter_queue[i]
@@ -32,6 +60,12 @@ class VideoFilter:
         print("No such filter is currently in the filter stack.")
 
     def filter(self, frame):
+        """
+        Apply all filters in the queue to the given frame
+
+        :param frame: numpy webcam-frame to be filtered
+        :return: Filtered frame
+        """
 
         for func in self.filter_queue:
             frame = func(frame)
@@ -41,6 +75,7 @@ class VideoFilter:
         return frame
         
     def clear(self):
+        """ Remove all filters in the current queue """
 
         print("Clear.")
         
@@ -139,7 +174,9 @@ def darken(frame):
 
     return brightness_adjustments(frame, 245)
 
+
 def brightness_adjustments(frame, brightness):
+    """ https://www.geeksforgeeks.org/changing-the-contrast-and-brightness-of-an-image-using-python-opencv/ """
     brightness = int((brightness - 0) * (255 - (-255)) / (510 - 0) + (-255))
 
     if brightness != 0:

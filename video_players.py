@@ -1,13 +1,23 @@
+"""
+    Author: Aiden Stevenson Bradwell
+    Date: 2021-11-19
+    Affiliation: University of Ottawa, Ottawa, Ontario (Student)
+
+    Description:
+        Declare two class...
+            VideoGetter: Read frames from webcam
+            VideoShower: Display frames after being filtered
+
+    Libraries required:
+        N/A
+"""
+
 from threading import Thread
-import cv2
-from tkinter.ttk import Label
-from tkinter import *
 from filter import *
 
-class VideoGetter:
-    """
 
-    """
+class VideoGetter:
+    """ Read frames from webcam """
 
     def __init__(self, src):
         self.camera = src
@@ -34,9 +44,7 @@ class VideoGetter:
 
 
 class VideoShower:
-    """
-
-    """
+    """ Display frames after being filtered """
 
     def __init__(self, frame_queue, video_filter, gui_frame):
         self.frame_queue = frame_queue
