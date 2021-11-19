@@ -16,8 +16,6 @@
 
 
 
-from threading import Thread
-import cv2
 from video_players import *
 from tkinter import *
 from filter import *
@@ -44,6 +42,8 @@ def add_single_filter_button(window, cmd, title, row, col):
     button = Button(window, text="[{}]".format(title), command=command)
     button.grid(row=row, column=col, sticky=E, pady=3)
 
+    return row + 1
+
 
 def add_single_misc_button(window, cmd, title, row, col):
     """
@@ -61,6 +61,7 @@ def add_single_misc_button(window, cmd, title, row, col):
     button = Button(window, text="[{}]".format(title), command=cmd)
     button.grid(row=row, column=col, sticky=E, pady=3)
 
+    return row + 1
 
 def add_button_info(window, cmd, title, row):
     """
@@ -85,6 +86,23 @@ def add_button_info(window, cmd, title, row):
     add_button.grid(row=row, column=1, sticky=E, pady=3, padx=5)
     remove_button.grid(row=row, column=2, sticky=E, pady=3, padx=5)
 
+    return row+1
+
+
+def add_blur_buttons(window, row):
+    v = IntVar(value=1)
+    Label(window, text="Blur Kernel:").grid(row=row, column=0)
+    Radiobutton(window, text="1", padx=0, variable=v, command=lambda: video_filter.set_blur_kernel(1)).grid(row=row, column=1)
+    Radiobutton(window, text="3", padx=0, variable=v, command=lambda: video_filter.set_blur_kernel(3)).grid(row=row+1, column=1)
+    Radiobutton(window, text="5", padx=0, variable=v, command=lambda: video_filter.set_blur_kernel(5)).grid(row=row+2, column=1)
+    Radiobutton(window, text="7", padx=0, variable=v, command=lambda: video_filter.set_blur_kernel(7)).grid(row=row+3, column=1)
+
+    Radiobutton(window, text="Normal", padx=0, variable=v, command=lambda: video_filter.set_blur_mode("normal")).grid(row=row + 1, column=2)
+    Radiobutton(window, text="Median", padx=0, variable=v, command=lambda: video_filter.set_blur_mode("median")).grid(row=row + 2, column=2)
+    Radiobutton(window, text="Gaussian", padx=0, variable=v, command=lambda: video_filter.set_blur_mode("gaussian")).grid(row=row + 3, column=2)
+
+    return row+4
+
 
 if __name__ == "__main__":
 
@@ -92,23 +110,24 @@ if __name__ == "__main__":
     top = Tk()
 
     l = Label(top, text="").grid(row=0, column=0, columnspan=15)
-
+    video_filter = VideoFilter(l)
     # Add all currently supported filtering methods
-    add_button_info(top, dothreshold, "Threshold", 2)
-    add_button_info(top, sharpen, "Sharpen", 3)
-    add_button_info(top, emboss, "Emboss", 4)
-    add_button_info(top, edge_detection, "Edge Detection", 5)
-    add_button_info(top, dither, "Dither", 6)
-    add_button_info(top, blur, "Blur", 7)
-    add_button_info(top, lighten, "Lighten", 8)
-    add_button_info(top, darken, "Darken", 9)
-    add_button_info(top, remove_pure, "Remove Pure", 10)
+    row = 0
+    row = add_button_info(top, dothreshold, "Threshold", row)
+    row = add_button_info(top, sharpen, "Sharpen", row)
+    row = add_button_info(top, emboss, "Emboss", row)
+    row = add_button_info(top, edge_detection, "Edge Detection", row)
+    row = add_button_info(top, blur, "Blur", row)
+    row = add_blur_buttons(top, row)
+    row = add_button_info(top, lighten, "Lighten", row)
+    row = add_button_info(top, darken, "Darken", row)
+    row = add_button_info(top, remove_pure, "Remove Pure", row)
 
     # Create filtering object, which stores the requested filters.
-    video_filter = VideoFilter(l)
-    add_single_misc_button(top, video_filter.clear, "Clear", 12, 1)
-    add_single_filter_button(top, bgr, "BGR", 11, 2)
-    add_single_filter_button(top, black_and_white, "B&W", 11, 1)
+
+    row = add_single_misc_button(top, video_filter.clear, "Clear", row, 1)
+    row = add_single_filter_button(top, bgr, "BGR", row, 2)
+    row = add_single_filter_button(top, black_and_white, "B&W", row, 1)
 
     # Initialize webcam
     camera = cv2.VideoCapture(0)

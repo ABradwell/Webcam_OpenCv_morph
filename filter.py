@@ -24,6 +24,8 @@ class VideoFilter:
         self.filter_queue = []
         self.out_str = ""
         self.label = label
+        self.blur_kernel = (3, 3)
+        self.blur_mode = "normal"
     
     def add_filter(self, filter_func):
         """
@@ -50,7 +52,7 @@ class VideoFilter:
 
         print("Remove filter.")
 
-        for i in range(len(self.filter_queue)-1, 0, -1):
+        for i in range(len(self.filter_queue)-1, -1, -1):
             if self.filter_queue[i].__name__ == filter_func.__name__:
                 del self.filter_queue[i]
                 self.label = self.__str__()
@@ -68,7 +70,10 @@ class VideoFilter:
         """
 
         for func in self.filter_queue:
-            frame = func(frame)
+            if func == blur:
+                frame = func(frame, self.blur_kernel, self.blur_mode)
+            else:
+                frame = func(frame)
 
         self.label = self.__str__()
 
@@ -82,7 +87,23 @@ class VideoFilter:
         self.filter_queue = []
         self.label = self.__str__()
         print(self)
-    
+
+    def set_blur_kernel(self, new_kernel):
+        self.blur_kernel = (new_kernel, new_kernel)
+
+    def set_blur_mode(self, blur_mode):
+
+        if blur_mode == "normal":
+            self.blur_mode = "normal"
+
+        elif blur_mode == "median":
+            self.blur_mode = "median"
+
+        else:
+            self.blur_mode = "gaussian"
+
+        print("Blur mode is set to: {}".format(self.blur_mode))
+
     def __str__(self):
         
         out_string = ""
@@ -144,17 +165,13 @@ def edge_detection(frame):
 
     return frame
 
-def dither(frame):
-    return frame
 
+def blur(frame, kernal, blur_mode):
 
-def blur(frame):
-
-    blur_type = "normal"
-    kernal = (5, 5)
-
-    if blur_type == "normal":
+    if blur_mode == "normal":
         return cv2.blur(frame, kernal)
+    elif blur_mode == "median":
+        return cv2.medianBlur(frame, kernal[0])
     else:
         return cv2.GaussianBlur(frame, kernal, cv2.BORDER_DEFAULT)
 
